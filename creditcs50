@@ -1,0 +1,108 @@
+#include<stdio.h>
+#include<cs50.h>
+#include<math.h>
+long long find_card_number(void);     //a function that will validate user input to be positive intigers only
+int seperate(long long);             //a function that seperate number digits and add them if number is bigger than 9
+bool validate_card_number(long long); //a function to apply Luhn’s Algorithm
+void find_card_type(long long);      // a function to find the type if the number is valid
+int main(void)
+{
+    long long CardNum = find_card_number();
+    if (!validate_card_number(CardNum))     //if the number is invalid
+    {
+        printf("INVALID\n");
+    }
+    else
+    {
+
+        find_card_type(CardNum);
+    }
+}
+
+long long  find_card_number(void)
+{
+    long long CardNum;
+    do
+    {
+
+        CardNum = get_long_long("Number: ");
+    }
+    while (CardNum < 0);
+    return CardNum;
+}
+
+int seperate(long long num)
+{
+    if (num > 9)
+    {
+        return (num % 10) + (num / 10);   // (num%10) is the last digit and (num/10) is the first digit
+    }
+    return num;       // if the number is less than 10 it will do nothing
+}
+
+
+
+
+bool validate_card_number(long long Cardnum)
+{
+    long long g1 = Cardnum;          // seperate cardnumber to two diffrent groups
+    long long g2 = Cardnum;
+
+    int sum = 0;
+
+
+    while (g1 > 0)
+    {
+        g1 /= 10;
+        sum += seperate(2 * (g1 % 10));
+        g1 /= 10;
+    }
+    while (g2 > 0)
+    {
+
+        sum += (g2 % 10);
+        g2 /= 100;
+
+    }
+    if ((sum % 10) == 0)  //to check if the last digit is 0
+    {
+        return 1;
+    }
+    return 0;
+}
+
+void find_card_type(long long CardNum)
+{
+    int CardLenght;
+    long long CardNum2 = CardNum;
+    for (CardLenght = 0; CardNum > 0; CardLenght++)
+    {
+        CardNum /= 10;
+    }
+
+    int FirstDigit = CardNum2 / (long long)pow(10, (CardLenght - 1));
+
+    int SecondDigit = (CardNum2 / (long long)pow(10, (CardLenght - 2))) % 10;
+
+
+
+    if (CardLenght == 16 && FirstDigit == 5 && (SecondDigit >= 1 && SecondDigit <= 5))
+    {
+
+        printf("MASTERCARD\n");
+    }
+    else if (CardLenght == 15 && FirstDigit == 3 && (SecondDigit == 4 || SecondDigit == 7))
+    {
+        printf("AMEX\n");
+    }
+    else if ((CardLenght == 16 || CardLenght == 13) && FirstDigit == 4)
+    {
+        printf("VISA\n");
+    }
+    else
+    {
+        printf("INVALID\n");
+    }
+
+
+}
